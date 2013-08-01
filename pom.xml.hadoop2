@@ -8,8 +8,8 @@
   <name>hbase-downstreamer</name>
   <url>https://github.com/saintstack/hbase-downstreamer</url>
   <properties>
-    <hbase.version>0.95.2-hadoop1-SNAPSHOT</hbase.version>
-    <hadoop.version>1.1.2</hadoop.version>
+    <hbase.version>0.95.2-hadoop2-SNAPSHOT</hbase.version>
+    <hadoop.version>2.0.5-alpha</hadoop.version>
   </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->
@@ -20,7 +20,7 @@
       <scope>test</scope>
     </dependency>
     <!--hbase-hadoop-compat comes in transtively but we need the test-jar
-        to and this does not come in transitively.  Ditto for the
+        too and this does not come in transitively.  Ditto for the
         hbase-hadoopX-compat.
      -->
     <dependency>
@@ -32,12 +32,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-hadoop1-compat</artifactId>
+      <artifactId>hbase-hadoop2-compat</artifactId>
       <version>${hbase.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <!--This has the actual HBaseTestingUtility in it.
+    <!--This has the actually HBaseTestingUtility in it.
       -->
     <dependency>
       <groupId>org.apache.hbase</groupId>
@@ -61,12 +61,13 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <!--We need hadoop test jar.  It has minidfs in it.
+    <!--We need hadoop2 test jar or minidfs at a minimum.
       It is not transitively included.
       -->
     <dependency>
       <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-test</artifactId>
+      <!--In hadoop1 this is hadoop-test-->
+      <artifactId>hadoop-minicluster</artifactId>
       <version>${hadoop.version}</version>
       <scope>test</scope>
     </dependency>
@@ -80,7 +81,6 @@
       <scope>test</scope>
     </dependency>
     <!--END OF TEST SCOPE-->
-
     <dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase-client</artifactId>
