@@ -8,8 +8,8 @@
   <name>hbase-downstreamer</name>
   <url>https://github.com/saintstack/hbase-downstreamer</url>
   <properties>
-    <hbase.version>0.95.2-hadoop2-SNAPSHOT</hbase.version>
-    <hadoop.version>2.0.5-alpha</hadoop.version>
+    <hbase.version>0.96.0-hadoop2</hbase.version>
+    <hadoop.version>2.1.0-beta</hadoop.version>
   </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->
@@ -87,4 +87,10 @@
       <version>${hbase.version}</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>Staging</id>
+      <url>https://repository.apache.org/content/repositories/orgapachehbase-076/</url>
+    </repository>
+  </repositories>
 </project>
