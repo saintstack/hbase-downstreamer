@@ -16,7 +16,7 @@ index 44d7f09..59b4c89 100644
    &lt;url>https://github.com/saintstack/hbase-downstreamer&lt;/url>
    &lt;properties>
 -    &lt;hbase.version>0.95.2-hadoop1-SNAPSHOT&lt;/hbase.version>
-+    &lt;hbase.version>0.96.0-hadoop1-SNAPSHOT&lt;/hbase.version>
+&%2B;    &lt;hbase.version>0.96.0-hadoop1-SNAPSHOT&lt;/hbase.version>
      &lt;hadoop.version>1.1.2&lt;/hadoop.version>
    &lt;/properties>
    &lt;dependencies>
