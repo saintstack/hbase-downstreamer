@@ -12,25 +12,25 @@ index 44d7f09..59b4c89 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -8,7 +8,7 @@
-   <name>hbase-downstreamer</name>
-   <url>https://github.com/saintstack/hbase-downstreamer</url>
-   <properties>
--    <hbase.version>0.95.2-hadoop1-SNAPSHOT</hbase.version>
-+    <hbase.version>0.96.0-hadoop1-SNAPSHOT</hbase.version>
-     <hadoop.version>1.1.2</hadoop.version>
-   </properties>
-   <dependencies>
+   &lt;name>hbase-downstreamer&lt;/name>
+   &lt;url>https://github.com/saintstack/hbase-downstreamer&lt;/url>
+   &lt;properties>
+-    &lt;hbase.version>0.95.2-hadoop1-SNAPSHOT&lt;/hbase.version>
++    &lt;hbase.version>0.96.0-hadoop1-SNAPSHOT&lt;/hbase.version>
+     &lt;hadoop.version>1.1.2&lt;/hadoop.version>
+   &lt;/properties>
+   &lt;dependencies>
 @@ -87,4 +87,10 @@
-       <version>${hbase.version}</version>
-     </dependency>
-   </dependencies>
-+  <repositories>
-+    <repository>
-+      <id>Staging</id>
-+      <url>https://repository.apache.org/content/repositories/orgapachehbase-076/</url>
-+    </repository>
-+  </repositories>
- </project>
+       &lt;version>${hbase.version}&lt;/version>
+     &lt;/dependency>
+   &lt;/dependencies>
++  &lt;repositories>
++    &lt;repository>
++      &lt;id>Staging&lt;/id>
++      &lt;url>https://repository.apache.org/content/repositories/orgapachehbase-076/&lt;/url>
++    &lt;/repository>
++  &lt;/repositories>
+ &lt;/project>
 
 Then to build against an hbase compiled against hadoop1, do the below:
 
