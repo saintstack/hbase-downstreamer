@@ -32,12 +32,12 @@ the version you want to run this downstream 'app' against and the repository to 
 
 Then to build against an hbase compiled against hadoop1, do the below:
 
-  $ mvn clean install
+    $ mvn clean install
 
 It runs a unit test that spins up an hdfs cluster.
 
 To build against an hbase compiled against hadoop2, do the above edit to pom.xml.hadoop2 and then run:
 
-  $ mvn clean install -f pom.xml.hadoop2
+    $ mvn clean install -f pom.xml.hadoop2
 
 It runs the same test only depends on hadoop2 hbase
