@@ -8,8 +8,8 @@
   <name>hbase-downstreamer</name>
   <url>https://github.com/saintstack/hbase-downstreamer</url>
   <properties>
-    <hbase.version>0.96.0-hadoop2</hbase.version>
-    <hadoop.version>2.1.0-beta</hadoop.version>
+    <hbase.version>0.99.0-hadoop2-SNAPSHOT</hbase.version>
+    <hadoop.version>2.3.0</hadoop.version>
   </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->
