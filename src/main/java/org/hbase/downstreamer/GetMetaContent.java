@@ -17,7 +17,7 @@ public class GetMetaContent {
     // Just go and scan .META.  Let that be success.
     Configuration configuration = HBaseConfiguration.create();
     if (args.length > 0) configuration.set(HConstants.ZOOKEEPER_QUORUM, args[0]);
-    HTable t = new HTable(configuration, ".META.");
+    HTable t = new HTable(configuration, HConstants.META_TABLE_NAME);
     try {
       ResultScanner scanner = t.getScanner(new Scan());
       for (Result r = null; (r = scanner.next()) != null;) {
