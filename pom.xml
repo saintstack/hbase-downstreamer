@@ -15,6 +15,9 @@
   <version>1.0-SNAPSHOT</version>
   <name>hbase-downstreamer</name>
   <url>https://github.com/saintstack/hbase-downstreamer</url>
+  <properties>
+    <hbase.staging.repository>https://repository.apache.org/content/repositories/orgapachehbase-076/</hbase.staging.repository>
+  </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->
     <dependency>
@@ -62,7 +65,7 @@
   <repositories>
     <repository>
       <id>Staging</id>
-      <url>https://repository.apache.org/content/repositories/orgapachehbase-076/</url>
+      <url>${hbase.staging.repository}</url>
     </repository>
   </repositories>
   <profiles>
