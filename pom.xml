@@ -17,6 +17,9 @@
   <url>https://github.com/saintstack/hbase-downstreamer</url>
   <properties>
     <hbase.staging.repository>https://repository.apache.org/content/repositories/orgapachehbase-076/</hbase.staging.repository>
+    <scala.version>2.10</scala.version>
+    <slf4j.version>1.7.5</slf4j.version>
+    <spark.version>1.5.0</spark.version>
   </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->
@@ -56,10 +59,24 @@
     </dependency>
     <!--END OF TEST SCOPE-->
 
+    <!-- General client dependencies, to be included in standalone jar -->
     <dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase-client</artifactId>
       <version>${hbase.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!-- Spark Streaming dependencies, should not be included in standalone jar -->
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_${scala.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <repositories>

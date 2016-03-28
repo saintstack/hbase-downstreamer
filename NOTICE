@@ -5,3 +5,8 @@ Copyright 2013 - 2016 various contributors:
 * Nick Dimiduk
 * Elliott Clark
 * Sean Busbey
+
+
+Contains software created at the Apache Software Foundation, which is covered by the Apache Software License version 2.0.
+
+* src/main/java/org/hbase/downstreamer/spark/JavaNetworkWordCountStoreInHBase.java from Apache Spark (c) 2014 the Apache Software Foundation
