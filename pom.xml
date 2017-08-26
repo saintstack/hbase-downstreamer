@@ -5,22 +5,30 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>17</version>
+    <version>18</version>
     <relativePath/>
     <!-- no parent resolution -->
   </parent>
   <groupId>org.hbase.downstreamer</groupId>
   <artifactId>hbase-downstreamer</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <version>2.0-SNAPSHOT</version>
   <name>hbase-downstreamer</name>
   <url>https://github.com/saintstack/hbase-downstreamer</url>
   <properties>
     <hbase.staging.repository>https://repository.apache.org/content/repositories/orgapachehbase-076/</hbase.staging.repository>
-    <scala.version>2.10</scala.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <spark.version>1.5.0</spark.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <hbase.98.version>0.98.24</hbase.98.version>
+    <hbase.1.version>1.2.6</hbase.1.version>
+    <hbase.2.version>2.0.0-alpha2</hbase.2.version>
   </properties>
+  <modules>
+    <module>hbase-0.98</module>
+    <module>hbase-1</module>
+    <module>hbase-2</module>
+  </modules>
   <dependencies>
     <!--START OF TEST SCOPE-->
     <dependency>
@@ -29,54 +37,11 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-    <!--hbase-hadoop-compat comes in transtively but we need the test-jar
-        to and this does not come in transitively.  Ditto for the
-        hbase-hadoopX-compat.
-     -->
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-hadoop-compat</artifactId>
-      <version>${hbase.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <!--This has the actual HBaseTestingUtility in it.
-      -->
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-testing-util</artifactId>
-      <version>${hbase.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!--We need this class for hbase servers at test time.
-      -->
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-server</artifactId>
-      <type>jar</type>
-      <version>${hbase.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!--END OF TEST SCOPE-->
-
-    <!-- General client dependencies, to be included in standalone jar -->
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-client</artifactId>
-      <version>${hbase.version}</version>
-    </dependency>
+    <!-- General dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
-    </dependency>
-
-    <!-- Spark Streaming dependencies, should not be included in standalone jar -->
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming_${scala.version}</artifactId>
-      <version>${spark.version}</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
   <repositories>
@@ -87,120 +52,42 @@
   </repositories>
   <profiles>
     <profile>
-      <id>hbase-1</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <hbase.version>1.1.0</hbase.version>
-        <hadoop.version>2.6.0</hadoop.version>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.hbase</groupId>
-          <artifactId>hbase-hadoop2-compat</artifactId>
-          <version>${hbase.version}</version>
-          <type>test-jar</type>
-          <scope>test</scope>
-        </dependency>
-        <!--We need hadoop2 test jar or minidfs at a minimum.
-          It is not transitively included.
-          -->
-        <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <!--In hadoop1 this is hadoop-test-->
-          <artifactId>hadoop-minicluster</artifactId>
-          <version>${hadoop.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>hbase-0.98</id>
-      <properties>
-        <hbase.version>0.98.12-hadoop2</hbase.version>
-        <hadoop.version>2.6.0</hadoop.version>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.hbase</groupId>
-          <artifactId>hbase-hadoop2-compat</artifactId>
-          <version>${hbase.version}</version>
-          <type>test-jar</type>
-          <scope>test</scope>
-        </dependency>
-        <!--We need hadoop2 test jar or minidfs at a minimum.
-          It is not transitively included.
-          -->
-        <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <!--In hadoop1 this is hadoop-test-->
-          <artifactId>hadoop-minicluster</artifactId>
-          <version>${hadoop.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>hbase-0.98-hadoop1</id>
-      <properties>
-        <hbase.version>0.98.12-hadoop1</hbase.version>
-        <hadoop.version>1.1.0</hadoop.version>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.hbase</groupId>
-          <artifactId>hbase-hadoop1-compat</artifactId>
-          <version>${hbase.version}</version>
-          <type>test-jar</type>
-          <scope>test</scope>
-        </dependency>
-        <!--We need hadoop test jar.  It has minidfs in it.
-          It is not transitively included.
-          -->
-        <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-test</artifactId>
-          <version>${hadoop.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>client-standalone</id>
       <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>org.hbase.downstreamer.GetMetaContent</mainClass>
-                </manifest>
-              </archive>
-              <descriptors>
-                <descriptor>src/main/assemblies/standalone.xml</descriptor>
-              </descriptors>
-              <finalName>${project.artifactId}-${project.version}-${hbase.version}_${hadoop.version}</finalName>
-            </configuration>
-            <executions>
-              <execution>
-                <id>client-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                <archive>
+                  <manifest>
+                    <mainClass>org.hbase.downstreamer.GetMetaContent</mainClass>
+                  </manifest>
+                </archive>
+                <descriptors>
+                  <descriptor>src/main/assemblies/standalone.xml</descriptor>
+                </descriptors>
+                <finalName>${project.artifactId}-${project.version}-${hbase.version}_${hadoop.version}</finalName>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>client-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>
   <build>
     <resources>
       <resource>
-        <directory>.</directory>
+        <directory>..</directory>
         <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE</include>
@@ -225,30 +112,6 @@
         <configuration>
           <classifier>${hbase.version}_${hadoop.version}</classifier>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-property</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireProperty>
-                  <property>hbase.version</property>
-                  <message>
-  Couldn't find a valid hbase version. If you are activating any profiles,
-  make sure you're including one that specifies the hbase version, e.g. -Phbase-1
-
-</message>
-                </requireProperty>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

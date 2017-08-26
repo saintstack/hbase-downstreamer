@@ -3,21 +3,22 @@ hbase-downstreamer
 
 Fake downstream project used figuring what is required when depending on hbase client and minicluster, etc.
 
-To build against the default of the current HBase 1.y release line and the last stable Hadoop
-version, simply run package.
+To build against the last three major HBase release lines, using a stable Hadoop version, just run package.
 
     $ mvn clean package
 
-It runs a unit test that spins up an hdfs cluster.
+It runs a unit test in each major release line that spins up an HBase cluster.
 
 The generated application also includes an example command to verify connectivity to a real cluster.
-To test it copy the artifact out of target/ and then run using the hbase command. It will need to know
+To test it copy the artifact out of the appropriate major version's target/ and then run using the hbase command. It will need to know
 your ZooKeeper quorum (defaults to localhost).
 
-    $ scp target/hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0.jar edge-node.example.com:
-    hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0.jar                                                                                                                           100%   11KB  10.8KB/s   00:00
+For example, to use the HBase 1.y API to test against an HBase 1.y cluster:
+
+    $ scp hbase-1/target/hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar edge-node.example.com:
+    hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar                                                             100%   11KB  10.8KB/s   00:00
     $ ssh edge-node.example.com
-    $ HBASE_CLASSPATH=hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0.jar hbase org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
+    $ HBASE_CLASSPATH=hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar hbase org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
     ...SNIP...
     $ echo $?
     0
@@ -28,54 +29,78 @@ The application should print out many entries from an hbase internal table and t
 building against specific HBase versions
 ===============================
 
-To build against an older version of HBase 1.y, specify hbase.version property on the maven
-command line. Similarly, you can use hadoop.version to specify a different release of Hadoop 2.
-For example, in this example we build against HBase 1.0.1 and Hadoop 2.7.0 (an unstable release of
-Hadoop currently available for developer testing).
+To build against a version of HBase 1.y other than the latest stable, specify `hbase.1.version`
+property on the maven command line. Similarly, you can use `hadoop.version` to specify a different
+release of Hadoop 2.
 
-    $ mvn -Dhbase.version=1.0.1 -Dhadoop.version=2.7.0 clean package
+For example, below we'll build our HBase 1.y API example against HBase 1.1.12 and Hadoop 2.7.0
+(an unstable release of Hadoop currently available for developer testing).
 
-To build against older release lines of HBase, you'll need to activate the hbase-0.98 profile.
+    $ mvn -Dhbase.1.version=1.1.12 -Dhadoop.version=2.7.0 -pl hbase-1 -am clean package
 
-    $ mvn -Phbase-0.98 clean package
+If you want to build against a specific HBase 0.98 version, you can specify `hbase.98.version` property
+on the maven command line. Just like the HBase 1.y module, `hadoop.version` can specify a different
+Hadoop 2 release.
 
-By default, this profile should use the latest version of HBase 0.98 and Hadoop 2. If you want to specify
-versions you can do it just like in the HBase 1 case.
+    $ mvn -Dhbase.98.version=0.98.12 -Dhadoop.version=2.7.0 -pl hbase-0.98 -am clean package
 
-    $ mvn -Phbase-0.98 -Dhbase-version=0.98.4 -Dhadoop.version=2.7.0 clean package
+If you want to use HBase 0.98 with Hadoop 1, you'll need to use the `hadoop-1` profile when building
+the `hbase-0.98` module. Specifying an HBase 0.98 or Hadoop 1 version other than the latest works
+similarly to the defaults that build against Hadoop 2. Note that the `hadoop-1` profile only alters
+the building of the HBase 0.98 API module; use of Hadoop 1 was dropped in HBase 1.0+.
 
-If you want to use HBase 0.98 with Hadoop 1, you'll need to use the hbase-0.98-hadoop1 profile.
-Specifying an HBase 0.98 or Hadoop 1 version other than the latest works similarly to the
-hadoop 2 version.
-
-    $ mvn -Phbase-0.98-hadoop1 clean package
+    $ mvn -Phadoop-1 -pl hbase-0.98 -am clean package
 
 To test building against a repository, e.g. the staging repo for an HBase release candidate, you can
 set use the hbase.staging.repository property. Note that you'll also have to specify the appropriate
 upstream release version. (for good measure clear your local cache of jars under .m2/repository or
 pass -U to maven building):
 
-    $ mvn -Dhbase.version=1.1.1 \
+    $ mvn -Dhbase.1.version=1.1.1 \
         -Dhbase.staging.repository='https://repository.apache.org/content/repositories/orgapachehbase-1001' \
         clean package
+
+testing source compatibility
+===========================
+
+Each of the major version specific modules should be relying on the supported APIs for that particular major release. As such, we expect them to work with the following major release. For example, the `hbase-0.98` module should build and run fine when given HBase 1.y release artifacts. Similarly, the `hbase-1` module should still build fine if we try to compile it against HBase 2.y releases.
+
+You can test the above assertions by passing in a suitable next-major-release version number for the api-specific parameters. E.g. to use the 0.98 API with upstream HBase 1.1.12 you would do:
+
+    $ mvn -Dhbase.98.version=1.1.12 -pl hbase-0.98 -am clean package
+
+To make this easier, there are profiles that will pick an appropraite next-major-version for you.
+
+Ensure HBase 0.98 API use works with HBase 1:
+
+    $ mvn -Pbuild-0.98-against-hbase-1 -pl hbase-0.98 -am clean package
+
+Ensure HBase 1 API use works with HBase 2:
+
+    $ mvn -Pbuild-1.y-against-hbase-2 -pl hbase-1 -am clean package
+
+As with most of the settings in this guide, you can combine these to test multiple modules at once:
+
+    $ mvn -Pbuild-0.98-against-hbase-1 -Pbuild-1.y-against-hbase-2 clean package
+
+You should not expect the reverse to work. That is, building the HBase 1.y API with an HBase 0.98 version will fail. Similarly, you should not expect using a version that is more than one major version ahead to work.
 
 testing client-server compatibility with a standalone client
 ============================================================
 
 If you wish to verify client-server wire compatibility between HBase & Hadoop versions you can
 build a standalone jar using the 'client-standalone' profile. This profile can be combined with any of the
-above options for choosing an HBase and Hadoop version, but you must always specify the HBase profile
-you want.
+above options for choosing an HBase and Hadoop version. (You must always specify a version for the HBase 0.98 module)
 
-    $ mvn -Pclient-standalone -Phbase-1 clean package
+    $ mvn -Pclient-standalone -Phadoop-2 clean package
 
 The generated artifact should be used on a live cluster with the java command. It should only need
 access to HBase client configuration files and the location of your zookeeper quorum.
 
-    $ scp target/hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0-standalone.jar edge-node.example.com:
-    hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0-standalone.jar                                                                                                                100%   31MB 378.3KB/s   01:24
+    $ scp hbase-1/target/hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar edge-node.example.com:
+    hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar                                                  100%   31MB 378.3KB/s   01:24
     $ ssh edge-node.example.com
-    $ java -cp /etc/hbase/conf:hbase-downstream-1.0-SNAPSHOT-1.1.0_2.6.0-standalone.java org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
+    $ java -cp /etc/hbase/conf:hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
     ...SNIP...
     $ echo $?
     0
@@ -114,11 +139,11 @@ Create needed test table in hbase and grant access to 'auser' (presumes hbase us
 
 Test run with writes to hbase on the cluster (no need to kinit, presuming default hbase, hadoop, and slf4j versions):
 
-        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase --packages org.slf4j:slf4j-api:1.7.5 hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
+        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase --packages org.slf4j:slf4j-api:1.7.5 hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
 
 Alternative, you can use the standalone client jar. In addition to relying on the HBase client jars you package, this will let you skip including the slf4j-api jars:
 
-        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase hbase-downstreamer-1.0-SNAPSHOT-1.1.0_2.6.0-standalone.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
+        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
 
 Verify results in hbase (presumes you have stored kerberos tickets)
 
