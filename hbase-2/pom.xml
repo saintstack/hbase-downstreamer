@@ -12,7 +12,7 @@
   <name>Downstream HBase 2.y API</name>
   <properties>
     <hbase.version>${hbase.2.version}</hbase.version>
-    <hadoop.version>2.6.1</hadoop.version>
+    <hadoop.version>2.7.1</hadoop.version>
     <!-- These should match default from HBase 2 release -->
     <scala.version>2.10.4</scala.version>
     <scala.binary>2.10</scala.binary>
