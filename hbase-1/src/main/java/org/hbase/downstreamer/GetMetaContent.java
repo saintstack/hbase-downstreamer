@@ -21,7 +21,7 @@ public class GetMetaContent {
     Configuration configuration = HBaseConfiguration.create();
     if (args.length > 0) configuration.set(HConstants.ZOOKEEPER_QUORUM, args[0]);
     try (final Connection connection = ConnectionFactory.createConnection(configuration);
-         final Table t = connection.getTable(TableName.valueOf(HConstants.META_TABLE_NAME));
+         final Table t = connection.getTable(TableName.META_TABLE_NAME);
          final ResultScanner scanner = t.getScanner(new Scan())) {
       for (Result r = null; (r = scanner.next()) != null;) {
         System.out.println(r);
