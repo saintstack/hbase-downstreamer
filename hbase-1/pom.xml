@@ -14,7 +14,7 @@
     <scala.version>2.10</scala.version>
     <spark.version>1.5.0</spark.version>
     <hbase.version>${hbase.1.version}</hbase.version>
-    <hadoop.version>2.6.1</hadoop.version>
+    <hadoop.version>2.7.1</hadoop.version>
   </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->

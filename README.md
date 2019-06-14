@@ -15,10 +15,10 @@ your ZooKeeper quorum (defaults to localhost).
 
 For example, to use the HBase 1.y API to test against an HBase 1.y cluster:
 
-    $ scp hbase-1/target/hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar edge-node.example.com:
-    hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar                                                             100%   11KB  10.8KB/s   00:00
+    $ scp hbase-1/target/hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1.jar edge-node.example.com:
+    hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1.jar                                                             100%   11KB  10.8KB/s   00:00
     $ ssh edge-node.example.com
-    $ HBASE_CLASSPATH=hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar hbase org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
+    $ HBASE_CLASSPATH=hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1.jar hbase org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
     ...SNIP...
     $ echo $?
     0
@@ -33,10 +33,9 @@ To build against a version of HBase 1.y other than the latest stable, specify `h
 property on the maven command line. Similarly, you can use `hadoop.version` to specify a different
 release of Hadoop 2.
 
-For example, below we'll build our HBase 1.y API example against HBase 1.1.12 and Hadoop 2.7.0
-(an unstable release of Hadoop currently available for developer testing).
+For example, below we'll build our HBase 1.y API example against HBase 1.3.4 and Hadoop 2.9.2.
 
-    $ mvn -Dhbase.1.version=1.1.12 -Dhadoop.version=2.7.0 -pl hbase-1 -am clean package
+    $ mvn -Dhbase.1.version=1.3.4 -Dhadoop.version=2.9.2 -pl hbase-1 -am clean package
 
 If you want to build against a specific HBase 0.98 version, you can specify `hbase.98.version` property
 on the maven command line. Just like the HBase 1.y module, `hadoop.version` can specify a different
@@ -56,8 +55,8 @@ set use the hbase.staging.repository property. Note that you'll also have to spe
 upstream release version. (for good measure clear your local cache of jars under .m2/repository or
 pass -U to maven building):
 
-    $ mvn -Dhbase.1.version=1.1.1 \
-        -Dhbase.staging.repository='https://repository.apache.org/content/repositories/orgapachehbase-1001' \
+    $ mvn -Dhbase.1.version=1.4.11 \
+        -Dhbase.staging.repository='https://repository.apache.org/content/repositories/orgapachehbase-1234' \
         clean package
 
 testing source compatibility
@@ -97,10 +96,10 @@ above options for choosing an HBase and Hadoop version. (You must always specify
 The generated artifact should be used on a live cluster with the java command. It should only need
 access to HBase client configuration files and the location of your zookeeper quorum.
 
-    $ scp hbase-1/target/hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar edge-node.example.com:
-    hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar                                                  100%   31MB 378.3KB/s   01:24
+    $ scp hbase-1/target/hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1-standalone.jar edge-node.example.com:
+    hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1-standalone.jar                                                  100%   31MB 378.3KB/s   01:24
     $ ssh edge-node.example.com
-    $ java -cp /etc/hbase/conf:hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
+    $ java -cp /etc/hbase/conf:hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1-standalone.jar org.hbase.downstreamer.GetMetaContent zoo1.example.com:2181,zoo2.example.com:2181,zoo3.example.com:2181
     ...SNIP...
     $ echo $?
     0
@@ -139,11 +138,11 @@ Create needed test table in hbase and grant access to 'auser' (presumes hbase us
 
 Test run with writes to hbase on the cluster (no need to kinit, presuming default hbase, hadoop, and slf4j versions):
 
-        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase --packages org.slf4j:slf4j-api:1.7.5 hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
+        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase --packages org.slf4j:slf4j-api:1.7.5 hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
 
 Alternative, you can use the standalone client jar. In addition to relying on the HBase client jars you package, this will let you skip including the slf4j-api jars:
 
-        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.2.6_2.6.1-standalone.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
+        $ spark-submit --master yarn --deploy-mode cluster --keytab auser.keytab --principal 'auser@EXAMPLE.COM' --class org.hbase.downstreamer.spark.JavaNetworkWordCountStoreInHBase hbase-downstreamer-api-1.y-2.0-SNAPSHOT-1.4.10_2.7.1-standalone.jar netcat.running.host.example.com 1772 2>spark.log | tee spark.out
 
 Verify results in hbase (presumes you have stored kerberos tickets)
 
