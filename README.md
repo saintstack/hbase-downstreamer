@@ -37,19 +37,6 @@ For example, below we'll build our HBase 1.y API example against HBase 1.3.4 and
 
     $ mvn -Dhbase.1.version=1.3.4 -Dhadoop.version=2.9.2 -pl hbase-1 -am clean package
 
-If you want to build against a specific HBase 0.98 version, you can specify `hbase.98.version` property
-on the maven command line. Just like the HBase 1.y module, `hadoop.version` can specify a different
-Hadoop 2 release.
-
-    $ mvn -Dhbase.98.version=0.98.12 -Dhadoop.version=2.7.0 -pl hbase-0.98 -am clean package
-
-If you want to use HBase 0.98 with Hadoop 1, you'll need to use the `hadoop-1` profile when building
-the `hbase-0.98` module. Specifying an HBase 0.98 or Hadoop 1 version other than the latest works
-similarly to the defaults that build against Hadoop 2. Note that the `hadoop-1` profile only alters
-the building of the HBase 0.98 API module; use of Hadoop 1 was dropped in HBase 1.0+.
-
-    $ mvn -Phadoop-1 -pl hbase-0.98 -am clean package
-
 To test building against a repository, e.g. the staging repo for an HBase release candidate, you can
 set use the hbase.staging.repository property. Note that you'll also have to specify the appropriate
 upstream release version. (for good measure clear your local cache of jars under .m2/repository or
@@ -62,34 +49,26 @@ pass -U to maven building):
 testing source compatibility
 ===========================
 
-Each of the major version specific modules should be relying on the supported APIs for that particular major release. As such, we expect them to work with the following major release. For example, the `hbase-0.98` module should build and run fine when given HBase 1.y release artifacts. Similarly, the `hbase-1` module should still build fine if we try to compile it against HBase 2.y releases.
+Each of the major version specific modules should be relying on the supported APIs for that particular major release. As such, we expect them to work with the following major release. For example, the `hbase-1` module should still build fine if we try to compile it against HBase 2.y releases.
 
-You can test the above assertions by passing in a suitable next-major-release version number for the api-specific parameters. E.g. to use the 0.98 API with upstream HBase 1.1.12 you would do:
+You can test the above assertions by passing in a suitable next-major-release version number for the api-specific parameters. E.g. to use the 1.x API with upstream HBase 2.1.5 you would do:
 
-    $ mvn -Dhbase.98.version=1.1.12 -pl hbase-0.98 -am clean package
+    $ mvn -Dhbase.version=2.1.5 -pl hbase-1 -am clean package
 
 To make this easier, there are profiles that will pick an appropraite next-major-version for you.
-
-Ensure HBase 0.98 API use works with HBase 1:
-
-    $ mvn -Pbuild-0.98-against-hbase-1 -pl hbase-0.98 -am clean package
 
 Ensure HBase 1 API use works with HBase 2:
 
     $ mvn -Pbuild-1.y-against-hbase-2 -pl hbase-1 -am clean package
 
-As with most of the settings in this guide, you can combine these to test multiple modules at once:
-
-    $ mvn -Pbuild-0.98-against-hbase-1 -Pbuild-1.y-against-hbase-2 clean package
-
-You should not expect the reverse to work. That is, building the HBase 1.y API with an HBase 0.98 version will fail. Similarly, you should not expect using a version that is more than one major version ahead to work.
+You should not expect the reverse to work. That is, building the HBase 2.y API module with an HBase 1.x version will fail. Similarly, you should not expect using a version that is more than one major version ahead to work.
 
 testing client-server compatibility with a standalone client
 ============================================================
 
 If you wish to verify client-server wire compatibility between HBase & Hadoop versions you can
 build a standalone jar using the 'client-standalone' profile. This profile can be combined with any of the
-above options for choosing an HBase and Hadoop version. (You must always specify a version for the HBase 0.98 module)
+above options for choosing an HBase and Hadoop version.
 
     $ mvn -Pclient-standalone -Phadoop-2 clean package
 
