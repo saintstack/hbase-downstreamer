@@ -97,7 +97,7 @@ Prerequisites:
 
 Build as described above. Optionally choose Scala and Spark versions appropriate for your distribution via `scala.version` and `spark.version`. The defaults are the equivalent to
     
-        $ mvn -Dscala.version=2.10 -Dspark.version=1.5.0
+        $ mvn -Dscala.version=2.11 -Dspark.version=2.4.0
     
 Run a netcat instance generating data (below examples presume this host is named _netcat.running.host.example.com_
     

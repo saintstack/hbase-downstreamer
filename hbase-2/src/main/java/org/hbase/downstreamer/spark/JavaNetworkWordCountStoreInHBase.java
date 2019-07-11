@@ -1,5 +1,5 @@
 /*
- * Changes Copyright 2016 hbase-downstreamer contributor(s).
+ * Changes Copyright 2016,2019 hbase-downstreamer contributor(s).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@
  *
  * derived from:
  * https://raw.githubusercontent.com/apache/spark/v1.5.0/examples/src/main/java/org/apache/spark/examples/streaming/JavaNetworkWordCount.java
+ * https://raw.githubusercontent.com/apache/spark/v2.4.0/examples/src/main/java/org/apache/spark/examples/streaming/JavaNetworkWordCount.java
  *
  */
 
 package org.hbase.downstreamer.spark;
 
 import scala.Tuple2;
-import com.google.common.collect.Lists;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -54,9 +54,6 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.StorageLevels;
@@ -76,6 +73,7 @@ import java.io.IOException;
 import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -214,7 +212,7 @@ public final class JavaNetworkWordCountStoreInHBase {
 
   private static final Pattern SPACE = Pattern.compile(" ");
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     if (args.length < 2) {
       System.err.println("Usage: JavaNetworkWordCountStoreInHBase <hostname> <port>");
       System.exit(1);
@@ -233,34 +231,15 @@ public final class JavaNetworkWordCountStoreInHBase {
     // Replication necessary in distributed scenario for fault tolerance.
     JavaReceiverInputDStream<String> lines = ssc.socketTextStream(
             args[0], Integer.parseInt(args[1]), StorageLevels.MEMORY_AND_DISK_SER);
-    JavaDStream<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
-      @Override
-      public Iterable<String> call(String x) {
-        return Lists.newArrayList(SPACE.split(x));
-      }
-    });
-    JavaPairDStream<String, Integer> wordCounts = words.mapToPair(
-      new PairFunction<String, String, Integer>() {
-        @Override
-        public Tuple2<String, Integer> call(String s) {
-          return new Tuple2<String, Integer>(s, 1);
-        }
-      }).reduceByKey(new Function2<Integer, Integer, Integer>() {
-        @Override
-        public Integer call(Integer i1, Integer i2) {
-          return i1 + i2;
-        }
-      });
+    JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(SPACE.split(x)).iterator());
+    JavaPairDStream<String, Integer> wordCounts = words.mapToPair(s -> new Tuple2<>(s,1))
+        .reduceByKey((i1, i2) -> i1 + i2);
 
     final StoreCountsToHBase store = new StoreCountsToHBase(sparkConf);
 
-    wordCounts.foreachRDD(new Function2<JavaPairRDD<String, Integer>, Time, Void>() {
-      @Override
-      public Void call(JavaPairRDD<String, Integer> rdd, Time time) throws IOException {
-        store.setTime(time);
-        rdd.foreachPartition(store);
-        return null;
-      }
+    wordCounts.foreachRDD((rdd, time) -> {
+      store.setTime(time);
+      rdd.foreachPartition(store);
     });
 
     ssc.start();
