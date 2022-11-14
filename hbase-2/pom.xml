@@ -5,14 +5,13 @@
     <groupId>org.hbase.downstreamer</groupId>
     <artifactId>hbase-downstreamer</artifactId>
     <version>2.0-SNAPSHOT</version>
-    <relativePath>../</relativePath>
   </parent>
   <artifactId>hbase-downstreamer-api-2.y</artifactId>
   <packaging>jar</packaging>
   <name>Downstream HBase 2.y API</name>
   <properties>
     <hbase.version>${hbase.2.version}</hbase.version>
-    <hadoop.version>2.8.5</hadoop.version>
+    <hadoop.version>${hadoop.3.version}</hadoop.version>
     <!-- These should match default from HBase 2 release -->
     <scala.version>2.10.4</scala.version>
     <scala.binary>2.10</scala.binary>
@@ -20,7 +19,7 @@
   </properties>
   <dependencies>
     <!--START OF TEST SCOPE-->
-    <!--hbase-hadoop-compat comes in transtively but we need the test-jar
+    <!--hbase-hadoop-compat comes in transitively but we need the test-jar
         to and this does not come in transitively.  Ditto for the
         hbase-hadoopX-compat.
      -->
@@ -45,6 +44,12 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <version>${hadoop.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.zookeeper</groupId>
+          <artifactId>zookeeper</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!--We need hadoop2 test jar or minidfs at a minimum.
       It is not transitively included.
@@ -71,6 +76,20 @@
       <artifactId>hbase-server</artifactId>
       <type>jar</type>
       <version>${hbase.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- hbase-server:test requires log4j2 dependencies, which are no otherwise present. -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j2.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j2.version}</version>
       <scope>test</scope>
     </dependency>
     <!--END OF TEST SCOPE-->
