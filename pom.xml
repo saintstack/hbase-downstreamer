@@ -17,11 +17,14 @@
   <url>https://github.com/saintstack/hbase-downstreamer</url>
   <properties>
     <hbase.staging.repository>https://repository.apache.org/content/repositories/orgapachehbase-076/</hbase.staging.repository>
-    <slf4j.version>1.7.5</slf4j.version>
+    <slf4j.version>1.7.33</slf4j.version>
+    <log4j2.version>2.17.2</log4j2.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <hbase.1.version>1.4.10</hbase.1.version>
-    <hbase.2.version>2.2.0</hbase.2.version>
+    <hbase.2.version>2.5.1</hbase.2.version>
+    <hadoop.2.version>2.10.0</hadoop.2.version>
+    <hadoop.3.version>3.2.4</hadoop.3.version>
   </properties>
   <modules>
     <module>hbase-1</module>
@@ -32,7 +35,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <!-- General dependencies -->
